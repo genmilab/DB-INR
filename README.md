@@ -10,6 +10,10 @@ alt="Typing SVG"
 style="margin-bottom:-10px; display:block;" />
 </a>
 
+[Soumen Sinha](https://openreview.net/profile?id=~Soumen_Sinha2)\*, [Adinath Madhavrao Dukre](https://openreview.net/profile?id=~Adinath_Madhavrao_Dukre1)\*, [Atharva Atul Rege](https://openreview.net/profile?id=~Atharva_Atul_Rege1)\*, [Pranav Sunil](https://openreview.net/profile?id=~Pranav_Sunil1), [Lara Santos Bastos](https://openreview.net/profile?id=~Lara_Santos_Bastos1), [Rahul Roy](https://openreview.net/profile?id=~Rahul_Roy2), [Imran Razzak](https://openreview.net/profile?id=~Imran_Razzak2)
+
+\* Equal first authors
+
 [![ISBI 2027](https://img.shields.io/badge/IEEE_ISBI_2027-Submission-8C1B13?style=for-the-badge)](#-citation)
 [![Weights](https://img.shields.io/badge/Weights-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](#-pretrained-weights)
 [![Task](https://img.shields.io/badge/Task-Implicit_Segmentation-37CCB6?style=for-the-badge)](#-method)
