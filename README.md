@@ -51,7 +51,6 @@ A coordinate network maps a spatial location to an intensity, and a small per-pi
 - [🏋️ Training](#️-training)
 - [⚡ Evaluation](#-evaluation)
 - [🗂️ Repository Structure](#️-repository-structure)
-- [⚠️ Limitations](#️-limitations)
 - [📝 Citation](#-citation)
 - [📚 Acknowledgments](#-acknowledgments)
 - [📨 Contact](#-contact)
@@ -248,12 +247,6 @@ DB-INR/
 ├── docs/assets/      # README figures (architecture, results, qualitative)
 └── requirements.txt
 ```
-
-## ⚠️ Limitations
-
-- On ACDC the margin over SIREN is not significant (30 of 50 slices, *p* = 0.25).
-- Qualitative cases were selected for large gains and do not represent the test-set distribution.
-- Test-time segmentation needs a per-scan fit of `Tf` steps, so inference is slower than a single feed-forward pass.
 
 ## 📝 Citation
 
