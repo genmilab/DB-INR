@@ -15,12 +15,13 @@ style="margin-bottom:-10px; display:block;" />
 \* Equal first authors
 
 [![ISBI 2027](https://img.shields.io/badge/IEEE_ISBI_2027-Submission-8C1B13?style=for-the-badge)](#-citation)
+[![Project Page](https://img.shields.io/badge/Project-Page-147B82?style=for-the-badge&logo=googlechrome&logoColor=white)](https://genmilab.github.io/DB-INR/)
 [![Weights](https://img.shields.io/badge/Weights-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](#-pretrained-weights)
 [![Task](https://img.shields.io/badge/Task-Implicit_Segmentation-37CCB6?style=for-the-badge)](#-method)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.2+-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](#️-installation)
 [![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2Fgenmilab%2FDB-INR&label=Views&countColor=%23147b82&style=for-the-badge)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fgenmilab%2FDB-INR)
 
-<h3>🧠 <a href="#-method">Method</a> &nbsp;|&nbsp; 🏆 <a href="#-results">Results</a> &nbsp;|&nbsp; 🧩 <a href="#-pretrained-weights">Weights</a> &nbsp;|&nbsp; 🏋️ <a href="#️-training">Train</a> &nbsp;|&nbsp; ⚡ <a href="#-evaluation">Evaluate</a></h3>
+<h3>🌐 <a href="https://genmilab.github.io/DB-INR/">Project Page</a> &nbsp;|&nbsp; 🧠 <a href="#-method">Method</a> &nbsp;|&nbsp; 🏆 <a href="#-results">Results</a> &nbsp;|&nbsp; 🧩 <a href="#-pretrained-weights">Weights</a> &nbsp;|&nbsp; 🏋️ <a href="#️-training">Train</a> &nbsp;|&nbsp; ⚡ <a href="#-evaluation">Evaluate</a></h3>
 
 <img src="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" alt="GenMI Lab" height="60"/>
 
