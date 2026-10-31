@@ -1,0 +1,79 @@
+{
+ "key": "DB-INR",
+ "title": "DB-INR: Dual-Band Implicit Neural Representations for Medical Image Segmentation",
+ "abstract": "Implicit neural representations (INRs) fit a continuous coordinate network to an unlabeled test image and decode segmentation from its fitted features. We introduce DB-INR, a dual-band sinusoidal residual layer with independently initialized projections, a fixed equal mixture, scaled residual connections, and nearby frequency multipliers. Controlled ablations support these choices and show that learning a mixing gate provides no measurable benefit over a normalized fixed mixture. At matched parameter budgets, DB-INR achieves the highest mean Dice among the evaluated coordinate backbones on brain and cardiac MRI, with the cardiac margin within seed variability. It improves average performance across MedSegBench datasets and supports accurate decoding between fitting-grid samples. Label-free rigid alignment substantially improves robustness on template-normalized brain scans. Coordinate-prior probes identify limitations when anatomy is not consistently aligned.",
+ "macros": "\\newcommand{\\etal}{\\textit{et al.}}\n\\newcommand{\\SD}[2]{#1(#2)}\n\\newcommand{\\authoraction}[1]{\\textbf{[Author to complete: #1]}}\n\\renewcommand{\\arraystretch}{1.02}\n\\renewcommand{\\topfraction}{0.94}\n\\renewcommand{\\bottomfraction}{0.90}\n\\renewcommand{\\textfraction}{0.06}\n\\renewcommand{\\floatpagefraction}{0.85}\n\\renewcommand{\\dbltopfraction}{0.94}\n\\renewcommand{\\thebibliography}[1]{",
+ "figures": [
+  {
+   "files": [
+    "figures/collage_oasis3.pdf"
+   ],
+   "caption": "\\textbf{Test-time fitting and decoding with DB-INR} on OASIS test subjects at the $1.0$\\,M budget with 25 labels: input, reconstruction after test-time fitting, labels decoded by the frozen head, and reference, with per-case Dice inset.}\n\\label{fig:collage-oasis",
+   "label": "fig:collage-oasis",
+   "resolved": [
+    "collage_oasis3.pdf"
+   ]
+  },
+  {
+   "files": [
+    "figures/pipeline_db.pdf"
+   ],
+   "caption": "\\textbf{Overview of the pipeline and of the DB-INR layer.} \\textbf{(I)} A coordinate network $f_\\theta$ and a per-pixel head $g_\\phi$ are meta-learned with MAML under a reconstruction and a classification term. \\textbf{(II)} At test time $f_\\theta$ is fitted to an unseen scan with the reconstruction term alone and labels are read from its penultimate features in one pass, with $\\phi$ frozen, so no annotation of the test scan is used. The block inside $f_{\\theta^\\star}$ is the DB-INR layer: a projection per band at its own effective frequency, the mixing gate pinned to the constant $\\mathbf{g}=\\tfrac12$ rather than learned, and a residual scaled by $1/\\sqrt{2}$.}\n\\label{fig:pipeline",
+   "label": "fig:pipeline",
+   "resolved": [
+    "pipeline_db.pdf"
+   ]
+  },
+  {
+   "files": [
+    "figures/qualitative_all.pdf"
+   ],
+   "caption": "\\textbf{Every backbone on the same test slices}, OASIS-2D at the $1.0$\\,M budget, per-slice Dice inset.}\n\\label{fig:qualitative",
+   "label": "fig:qualitative",
+   "resolved": [
+    "qualitative_all.pdf"
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "latex": "[t]\n\\centering\n\\caption{Matched-capacity benchmark. Dice is foreground macro-average and is reported as mean $\\pm$ seed SD. HD denotes HD95 and NSD denotes NSD$_1$. Bold identifies the best implicit model. M: millions of parameters (OASIS-2D; other tasks within $2\\%$, except full U-Net at $7.90$ M on OASIS-3D). At least two seeds per cell; SD is available only for Dice.}\n\\label{tab:benchmark}\n\\setlength{\\tabcolsep}{2.5pt}\n\\resizebox{\\textwidth}{!}{\n\\begin{tabular}{@{}lr rrr rrr rrr@{}}\n\\toprule\n& & \\multicolumn{3}{c}{OASIS-2D} & \\multicolumn{3}{c}{ACDC} & \\multicolumn{3}{c}{OASIS-3D}\\\\\n\\cmidrule(lr){3-5}\\cmidrule(lr){6-8}\\cmidrule(lr){9-11}\nModel & M & Dice $\\uparrow$ & HD $\\downarrow$ & NSD $\\uparrow$ & Dice $\\uparrow$ & HD $\\downarrow$ & NSD $\\uparrow$ & Dice $\\uparrow$ & HD $\\downarrow$ & NSD $\\uparrow$\\\\\n\\midrule\nSIREN & 1.07 & 0.8331 $\\pm$ 0.0027 & 4.00 & 0.899 & 0.5548 $\\pm$ 0.0077 & 21.34 & 0.299 & 0.8318 $\\pm$ 0.0013 & 1.017 & 0.975\\\\\nGauss & 1.07 & 0.8116 $\\pm$ 0.0029 & 3.55 & 0.873 & 0.5337 $\\pm$ 0.0069 & \\textbf{20.52} & 0.290 & 0.8154 $\\pm$ 0.0007 & 1.017 & 0.976\\\\\nWIRE & 1.06 & 0.8201 $\\pm$ 0.0036 & \\textbf{2.83} & 0.888 & 0.5183 $\\pm$ 0.0013 & 22.10 & 0.279 & 0.8049 $\\pm$ 0.0023 & 1.024 & 0.973\\\\\nFINER & 1.07 & 0.7705 $\\pm$ 0.0056 & 5.93 & 0.822 & 0.2361 $\\pm$ 0.0071 & 28.01 & 0.160 & 0.7629 $\\pm$ 0.0013 & 1.190 & 0.950\\\\\nHOSC & 1.07 & 0.7919 $\\pm$ 0.0046 & 3.29 & 0.853 & 0.5225 $\\pm$ 0.0041 & 21.22 & 0.281 & 0.7958 $\\pm$ 0.0026 & 1.047 & 0.969\\\\\n\\textbf{DB-INR} & 1.06 & \\textbf{0.8513 $\\pm$ 0.0007} & 3.47 & \\textbf{0.924} & \\textbf{0.5588 $\\pm$ 0.0013} & 22.97 & \\textbf{0.303} & \\textbf{0.8368 $\\pm$ 0.0010} & \\textbf{1.005} & \\textbf{0.979}\\\\\n\\midrule\nU-Net, matched & 1.09 & 0.7529 $\\pm$ 0.0312 & 5.49 & 0.797 & 0.8814 $\\pm$ 0.0066 & 6.48 & 0.743 & 0.9150 $\\pm$ 0.0013 & 1.000 & 0.992\\\\\nU-Net, full & 7.77 & 0.8802 $\\pm$ 0.0123 & 3.35 & 0.948 & 0.8581 $\\pm$ 0.0286 & 11.40 & 0.726 & 0.9210 $\\pm$ 0.0010 & 1.000 & 0.993\\\\\n\\bottomrule\n\\end{tabular}\n}",
+   "label": "tab:benchmark"
+  },
+  {
+   "latex": "[tb]\n\\centering\n\\caption{OASIS-2D ablation. Gain is relative to DB-INR for P1, and to the normalized fixed mixture for P2--P4. Four seeds, except capacity-matched P2 (three); Dice is mean $\\pm$ SD; two-sided Welch tests.}\n\\label{tab:ablation}\n\\setlength{\\tabcolsep}{2.4pt}\n\\begin{tabular}{@{}lrrr@{}}\n\\toprule\nAlternative & Dice $\\uparrow$ & Gain & $p$\\\\\n\\midrule\nP1: learned gate & 0.8474 $\\pm$ 0.0021 & +0.0069 & 0.0026\\\\\nP1: normalization only & 0.8470 $\\pm$ 0.0014 & +0.0073 & 0.0003\\\\\nP2: shared projection & 0.8299 $\\pm$ 0.0043 & +0.0171 & 0.0146\\\\\nP3: unscaled residual & 0.8267 $\\pm$ 0.0059 & +0.0203 & 0.0046\\\\\nP3: no residual & 0.8244 $\\pm$ 0.0036 & +0.0226 & 0.0042\\\\\nP4: widely spaced bands & 0.8249 $\\pm$ 0.0063 & +0.0221 & 0.0046\\\\\n\\midrule\n\\textbf{DB-INR} & \\textbf{0.8543 $\\pm$ 0.0013} & -- & --\\\\\n\\bottomrule\n\\end{tabular}",
+   "label": "tab:ablation"
+  },
+  {
+   "latex": "[tb]\n\\centering\n\\caption{MedSegBench Dice, two seeds, matched capacity and schedule, $\\omega=30$; up to $160$ training and $80$ test images. Bold: better method. $\\Delta$ is calculated from the displayed rounded means.}\n\\label{tab:msb}\n\\setlength{\\tabcolsep}{2.1pt}\n\\begin{tabular}{@{}llrrr@{}}\n\\toprule\nDataset & Modality & MetaSeg & DB-INR & $\\Delta$\\\\\n\\midrule\nBBBC010 & Microsc. & 0.702 & \\textbf{0.722} & +0.020\\\\\nBriFiSeg & Microsc. & 0.018 & \\textbf{0.090} & +0.072\\\\\nBUSI & Ultrasound & 0.298 & \\textbf{0.360} & +0.062\\\\\nCellNuclei & Microsc. & \\textbf{0.751} & 0.744 & $-0.007$\\\\\nCOVID-19 R. & X-ray & 0.849 & \\textbf{0.859} & +0.010\\\\\nCovidQU-Ex & X-ray & 0.433 & \\textbf{0.466} & +0.033\\\\\nDCA1 & X-ray angio. & 0.213 & \\textbf{0.302} & +0.089\\\\\nISIC-2016 & Dermosc. & 0.847 & \\textbf{0.860} & +0.013\\\\\nKvasir & Endosc. & 0.203 & \\textbf{0.324} & +0.121\\\\\nMosMed+ & CT & 0.216 & \\textbf{0.235} & +0.019\\\\\nPROMISE12 & MRI & \\textbf{0.641} & 0.637 & $-0.004$\\\\\n\\midrule\nMean & & 0.470 & \\textbf{0.509} & +0.039\\\\\n\\bottomrule\n\\end{tabular}",
+   "label": "tab:msb"
+  },
+  {
+   "latex": "[tb]\n\\centering\n\\caption{Off-grid Dice: fit only the coarse grid, then query at native $192^2$ coordinates or resample the same fit; score against native labels. Three seeds per baseline, four for DB-INR; values are mean $\\pm$ SD. Bold: best per column.}\n\\label{tab:offgrid}\n\\setlength{\\tabcolsep}{1.9pt}\n\\resizebox{\\columnwidth}{!}{\n\\begin{tabular}{@{}lrrrr@{}}\n\\toprule\n& \\multicolumn{2}{c}{Fit at $96^2$} & \\multicolumn{2}{c}{Fit at $64^2$}\\\\\n\\cmidrule(lr){2-3}\\cmidrule(lr){4-5}\nModel & Query & Resample & Query & Resample\\\\\n\\midrule\nSIREN & 0.8203 $\\pm$ 0.0054 & 0.8098 $\\pm$ 0.0051 & 0.7924 $\\pm$ 0.0091 & 0.7835 $\\pm$ 0.0075\\\\\nGauss & 0.7958 $\\pm$ 0.0024 & 0.7926 $\\pm$ 0.0017 & 0.7611 $\\pm$ 0.0030 & 0.7599 $\\pm$ 0.0037\\\\\nWIRE & 0.7882 $\\pm$ 0.0055 & 0.7991 $\\pm$ 0.0043 & 0.7297 $\\pm$ 0.0106 & 0.7536 $\\pm$ 0.0042\\\\\nFINER & 0.7277 $\\pm$ 0.0090 & 0.7539 $\\pm$ 0.0049 & 0.6747 $\\pm$ 0.0119 & 0.6930 $\\pm$ 0.0113\\\\\nHOSC & 0.6625 $\\pm$ 0.0108 & 0.6832 $\\pm$ 0.0139 & 0.5842 $\\pm$ 0.0054 & 0.6071 $\\pm$ 0.0060\\\\\n\\textbf{DB-INR} & \\textbf{0.8416 $\\pm$ 0.0013} & \\textbf{0.8300 $\\pm$ 0.0024} & \\textbf{0.8158 $\\pm$ 0.0023} & \\textbf{0.8010 $\\pm$ 0.0038}\\\\\n\\bottomrule\n\\end{tabular}\n}",
+   "label": "tab:offgrid"
+  },
+  {
+   "latex": "[t]\n\\centering\n\\caption{Dice under rigid transforms on the $100$ OASIS-2D test scans. Bold: best \\emph{unaligned coordinate backbone} per column. Alignment uses intensities only; U-Net translation is non-monotone because of cropping/background changes.}\n\\label{tab:robust}\n\\scriptsize\n\\setlength{\\tabcolsep}{2.2pt}\n\\begin{tabular}{@{}lrrrrr@{}}\n\\toprule\n& \\multicolumn{5}{c}{Translation (pixels)}\\\\\n\\cmidrule(lr){2-6}\nModel & 0 & 5 & 10 & 15 & 20\\\\\n\\midrule\nSIREN & 0.835 & 0.685 & 0.431 & 0.300 & 0.234\\\\\nGauss & 0.813 & 0.670 & 0.438 & \\textbf{0.310} & \\textbf{0.244}\\\\\nWIRE & 0.816 & 0.652 & 0.418 & 0.291 & 0.230\\\\\nFINER & 0.777 & 0.610 & 0.390 & 0.274 & 0.217\\\\\nHOSC & 0.797 & 0.652 & 0.430 & 0.304 & 0.238\\\\\n\\textbf{DB-INR} & \\textbf{0.852} & \\textbf{0.708} & \\textbf{0.441} & 0.306 & 0.240\\\\\n\\midrule\nDB-INR + align. & 0.847 & 0.847 & 0.847 & 0.846 & 0.847\\\\\nU-Net & 0.872 & 0.852 & 0.833 & 0.841 & 0.843\\\\\n\\bottomrule\n\\end{tabular}\n\\vspace{3pt}\n\n\\begin{tabular}{@{}lrrrrr@{}}\n\\toprule\n& \\multicolumn{5}{c}{Rotation (degrees)}\\\\\n\\cmidrule(lr){2-6}\nModel & 5 & 10 & 15 & 20 & 30\\\\\n\\midrule\nSIREN & 0.796 & 0.741 & 0.668 & 0.602 & 0.501\\\\\nGauss & 0.776 & 0.719 & 0.657 & 0.594 & 0.498\\\\\nWIRE & 0.781 & 0.717 & 0.648 & 0.586 & 0.491\\\\\nFINER & 0.740 & 0.679 & 0.613 & 0.558 & 0.467\\\\\nHOSC & 0.759 & 0.702 & 0.640 & 0.584 & 0.490\\\\\n\\textbf{DB-INR} & \\textbf{0.814} & \\textbf{0.756} & \\textbf{0.678} & \\textbf{0.611} & \\textbf{0.510}\\\\\n\\midrule\nDB-INR + align. & 0.828 & 0.826 & 0.828 & 0.827 & 0.826\\\\\nU-Net & 0.845 & 0.832 & 0.818 & 0.799 & 0.733\\\\\n\\bottomrule\n\\end{tabular}",
+   "label": "tab:robust"
+  }
+ ],
+ "sections": [
+  "s:Introduction",
+  "s:Related Work",
+  "s:Method",
+  "s:Meta-learned implicit segmentation",
+  "s:Dual-band residual layer",
+  "s:Label-free rigid alignment",
+  "s:Experiments",
+  "s:Data and protocol",
+  "s:Results and limitations",
+  "s:Conclusion",
+  "s:Compliance with ethical standards",
+  "s:Acknowledgments"
+ ],
+ "figureFiles": [
+  "collage_oasis3.pdf",
+  "pipeline_db.pdf",
+  "qualitative_all.pdf"
+ ]
+}
