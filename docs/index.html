@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DB-INR: Dual-Band Implicit Neural Representations for Medical Image Segmentation</title>
+<meta name="description" content="Reference implementation of the DB-INR layer and the meta-learned implicit segmentation pipeline it is trained in." />
+<meta name="theme-color" content="#147b82" />
+<meta property="og:title" content="DB-INR: Dual-Band Implicit Neural Representations for Medical Image Segmentation" />
+<meta property="og:description" content="Reference implementation of the DB-INR layer and the meta-learned implicit segmentation pipeline it is trained in." />
+<meta property="og:type" content="website" />
+<meta name="citation_title" content="DB-INR: Dual-Band Implicit Neural Representations for Medical Image Segmentation" />
+<link rel="icon" href="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" />
+<link rel="stylesheet" href="project.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="project.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><div class="nav-wrap">
+<a class="brand" href="#top">DB-INR</a>
+<nav aria-label="Main navigation"><a href="#-method">Method</a><a href="#-results">Results</a><a href="#️-installation">Installation</a><a href="#-pretrained-weights">Weights</a><a href="#-citation">Citation</a></nav>
+<a class="nav-code" href="https://github.com/genmilab/DB-INR">GitHub <span aria-hidden="true">↗</span></a>
+</div></header>
+<main id="main">
+<section class="hero container" id="top" aria-labelledby="project-title">
+<a class="lab-identity" href="https://github.com/genmilab" aria-label="GenMI-Lab on GitHub">
+<img src="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" width="460" height="460" alt="GenMI-Lab logo" />
+<span><strong>GenMI-Lab</strong><span>MBZUAI</span></span></a>
+<p class="project-name">DB-INR</p>
+<h1 id="project-title">DB-INR: Dual-Band Implicit Neural Representations for Medical Image Segmentation</h1>
+<div class="authors" aria-label="Authors"><span><a href="https://openreview.net/profile?id=~Soumen_Sinha2">Soumen Sinha</a><sup>&#42;</sup></span><span><a href="https://openreview.net/profile?id=~Adinath_Madhavrao_Dukre1">Adinath Madhavrao Dukre</a><sup>&#42;</sup></span><span><a href="https://openreview.net/profile?id=~Atharva_Atul_Rege1">Atharva Atul Rege</a><sup>&#42;</sup></span><span><a href="https://openreview.net/profile?id=~Pranav_Sunil1">Pranav Sunil</a></span><span><a href="https://openreview.net/profile?id=~Lara_Santos_Bastos1">Lara Santos Bastos</a></span><span><a href="https://openreview.net/profile?id=~Rahul_Roy2">Rahul Roy</a></span><span><a href="https://openreview.net/profile?id=~Imran_Razzak2">Imran Razzak</a></span></div>
+
+<p class="equal-contribution"><sup>*</sup> Equal first authors</p>
+<p class="hero-description">Two sinusoidal bands per layer.<br />A fixed equal mixture and a scaled residual.<br />Segment an unseen scan from its intensities alone.</p>
+<div class="resource-links"><a class="button button-primary" href="https://github.com/genmilab/DB-INR"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-12-2 14"/></svg>Code</a><a class="button button-secondary" href="#-results">Results <span aria-hidden="true">↓</span></a></div>
+<div class="hero-meta"><span>IEEE ISBI 2027 Submission</span></div>
+</section>
+<section class="section container narrow page-section" id="-news"><p class="section-kicker">01 / NEWS</p><h2>News</h2>
+<ul>
+<li><strong>[Oct 2026]</strong> 🚀 Code and checkpoints for the three benchmarks of Table 1 are released.</li>
+<li>📄 The paper is submitted to <strong>IEEE ISBI 2027</strong>.</li>
+</ul>
+</section>
+<section class="section container narrow page-section" id="overview"><p class="section-kicker">02 / OVERVIEW</p><h2>Overview</h2>
+<p>Reference implementation of the <strong>DB-INR</strong> layer and the meta-learned implicit segmentation pipeline it is trained in.</p>
+<p>A coordinate network maps a spatial location to an intensity, and a small per-pixel head reads class labels from its penultimate features. <strong>DB-INR</strong> replaces the single sinusoid of each layer with a <strong>low- and a high-frequency band</strong>, each with its own projection and initialisation, mixed with a fixed equal weight and added to a residual scaled by 1/√2. At test time the network is fitted to the intensities of an unseen scan, and the labels are read off in one forward pass. <strong>No annotation of the test scan is used.</strong></p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/genmilab/DB-INR/main/docs/assets/fig1_architecture.png" alt="DB-INR pipeline and layer" width="100%"/>
+<br/>
+<em><b>Fig. 1. Overview of the pipeline and of the DB-INR layer.</b> <b>(I)</b> A coordinate network f<sub>θ</sub> and a per-pixel head g<sub>φ</sub> are meta-learned with MAML under a reconstruction and a classification term. <b>(II)</b> At test time f<sub>θ</sub> is fitted to an unseen scan with the reconstruction term alone and labels are read from its penultimate features in one pass, with φ frozen, so no annotation of the test scan is used. The block inside f<sub>θ*</sub> is the DB-INR layer: a projection per band at its own effective frequency, the mixing gate pinned to the constant g = ½ rather than learned, and a residual scaled by 1/√2.</em>
+</p>
+</section>
+<section class="section container narrow page-section" id="-method"><p class="section-kicker">03 / METHOD</p><h2>Method</h2>
+<h3>The layer</h3>
+<p>Each layer carries a low- and a high-frequency sinusoidal branch with its own projection, combines them with a fixed equal mixture, and adds a residual scaled by <code>1/sqrt(2)</code>:</p>
+<pre><code>y = 0.5 * sin(w * r_lo * W_lo x) + 0.5 * sin(w * r_hi * W_hi x)
+h = (y + R(x)) / sqrt(2)
+</code></pre>
+<p>with <code>r_lo = 1/sqrt(rho)</code>, <code>r_hi = sqrt(rho)</code>, <code>rho = phi</code> (the golden ratio) by default, <code>W_lo</code> and <code>W_hi</code> drawn from <code>U(±sqrt(6/n)/(w*r))</code> at each branch's own effective frequency, and <code>R</code> the identity where the width is unchanged and otherwise <code>U(±sqrt(3/n))</code>.</p>
+<p>The supplementary derives four design conditions, each tested in the ablations:</p>
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>Condition</th>
+<th>Design choice</th>
+<th>Ablation flag (<code>dbinr/layers.py</code> / <code>train.py</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>the mixture is fixed, not learned</td>
+<td><code>fixed_gate=None</code> / <code>--fixed-gate</code> restores a learned gate; <code>norm_gate=True</code> / <code>--norm-gate</code> adds the variance-preserving denominator</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>each branch has its own projection and initialisation</td>
+<td><code>share_linear=True</code> / <code>--share-linear</code> gives both branches one projection</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>the residual is scaled by 1/√2</td>
+<td><code>scale_residual=False</code> / <code>--no-scale-residual</code>; <code>--no-residual</code> removes it</td>
+</tr>
+<tr>
+<td>P4</td>
+<td>the two bands sit near the base frequency</td>
+<td><code>--rho</code> sets the band ratio r_hi / r_lo</td>
+</tr>
+</tbody>
+</table></div>
+<h3>The pipeline</h3>
+<ol>
+<li><strong>Stage one (meta-learning).</strong> The coordinate network and the head are meta-learned jointly with MAML, each scan a task. The inner loop adapts the network to one scan for <code>Ti</code> Adam steps with the reconstruction term alone; the outer loop updates network and head under a reconstruction and a focal term.</li>
+<li><strong>Stage two (read-out).</strong> The network is refitted to every training scan, the penultimate features are cached, and the read-out (one 512-wide hidden layer) is trained on them with early stopping.</li>
+<li><strong>Test time.</strong> The network is fitted to the intensities of an unseen scan for <code>Tf</code> steps with the reconstruction term alone, and labels are read from the fitted features in one forward pass with the head frozen.</li>
+</ol>
+<div class="callout callout-note"><strong>Note</strong><p>Every backbone in the paper (SIREN, Gauss, WIRE, FINER, HOSC and DB-INR) is trained and evaluated under exactly this protocol and a matched parameter budget. Only the coordinate activation and its validated base frequency differ.</p></div>
+</section>
+<section class="section container narrow page-section" id="-results"><p class="section-kicker">04 / RESULTS</p><h2>Results</h2>
+<p>Mean Dice, NSD and HD95 over the full test sets are in Table 1 of the paper. The supplementary repeats every comparison case by case (same trained models, two-sided Wilcoxon signed-rank test over test cases):</p>
+<div align="center">
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>Baseline</th>
+<th style="text-align: center;">OASIS-2D (100 subjects)<br/>ahead · median Δ · <em>p</em></th>
+<th style="text-align: center;">OASIS-3D (40 volumes)<br/>ahead · median Δ · <em>p</em></th>
+<th style="text-align: center;">ACDC (50 slices)<br/>ahead · median Δ · <em>p</em></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIREN</td>
+<td style="text-align: center;">96/100 · +0.0173 · 5.8e-18</td>
+<td style="text-align: center;">40/40 · +0.0051 · 1.8e-12</td>
+<td style="text-align: center;">30/50 · +0.0092 · 2.5e-01</td>
+</tr>
+<tr>
+<td>Gauss</td>
+<td style="text-align: center;">100/100 · +0.0378 · 3.9e-18</td>
+<td style="text-align: center;">40/40 · +0.0213 · 1.8e-12</td>
+<td style="text-align: center;">39/50 · +0.0251 · 1.0e-04</td>
+</tr>
+<tr>
+<td>WIRE</td>
+<td style="text-align: center;">98/100 · +0.0321 · 4.5e-18</td>
+<td style="text-align: center;">40/40 · +0.0295 · 1.8e-12</td>
+<td style="text-align: center;">43/50 · +0.0381 · 6.0e-07</td>
+</tr>
+<tr>
+<td>FINER</td>
+<td style="text-align: center;">100/100 · +0.0770 · 3.9e-18</td>
+<td style="text-align: center;">40/40 · +0.0733 · 1.8e-12</td>
+<td style="text-align: center;">48/50 · +0.3550 · 8.9e-15</td>
+</tr>
+<tr>
+<td>HOSC</td>
+<td style="text-align: center;">100/100 · +0.0582 · 3.9e-18</td>
+<td style="text-align: center;">40/40 · +0.0398 · 1.8e-12</td>
+<td style="text-align: center;">42/50 · +0.0317 · 2.1e-08</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<ul>
+<li>On both brain tasks the gain is spread across cases rather than concentrated in a few.</li>
+<li>On ACDC, DB-INR separates from four backbones but not from SIREN (30/50, <em>p</em> = 0.25): its margin over SIREN sits inside the noise.</li>
+</ul>
+<p align="center">
+<img src="https://raw.githubusercontent.com/genmilab/DB-INR/main/docs/assets/fig_paired.png" alt="Per-case Dice against SIREN" width="100%"/>
+<br/>
+<em><b>Per-case Dice against SIREN</b>, the strongest baseline on each benchmark, with DB-INR on the vertical axis and SIREN on the horizontal, one point per test case, identity line in grey; points above the identity line are cases in which DB-INR achieves higher Dice.</em>
+</p>
+</section>
+<section class="section container narrow page-section" id="-qualitative-results"><p class="section-kicker">05 / QUALITATIVE RESULTS</p><h2>Qualitative Results</h2>
+<div class="callout callout-note"><strong>Note</strong><p>The cases below were selected as examples with large DB-INR gains over the strongest baseline. They show where the layer helps, not typical test-set performance.</p></div>
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/genmilab/DB-INR/main/docs/assets/fig_grid_main.png" alt="Every backbone on the same OASIS-2D and ACDC scans" width="100%"/>
+<br/>
+<em><b>Every backbone on the same scans.</b> Five OASIS-2D slices with 25 labels above, five ACDC slices with three labels below, all at the 1.0 M budget. Columns are the input, the five baselines, DB-INR and the reference.</em>
+</p>
+
+<p>On OASIS-2D every backbone recovers the same gross anatomy and they differ at the boundaries of the thin cortical labels. On ACDC the baselines return speckle over the myocardium and blood pool where DB-INR returns connected regions.</p>
+<p align="center">
+<img src="https://raw.githubusercontent.com/genmilab/DB-INR/main/docs/assets/fig_collage_3d.png" alt="Volumetric result on OASIS-3D" width="85%"/>
+<br/>
+<em><b>Volumetric result on OASIS-3D</b> at 64 × 64 × 64. Three orthogonal views of one test volume, segmented by the same layer and protocol with a three-dimensional coordinate; per-case Dice inset.</em>
+</p>
+
+<details>
+<summary><strong>MedSegBench: ISIC-2016, BBBC010, COVID-19 Radiography</strong></summary>
+<p align="center">
+<img src="https://raw.githubusercontent.com/genmilab/DB-INR/main/docs/assets/fig_grid_msb.png" alt="Every backbone on three MedSegBench benchmarks" width="100%"/>
+<br/>
+<em><b>Every backbone on three MedSegBench benchmarks.</b> Three test images each from ISIC-2016 dermoscopy, BBBC010 microscopy and COVID-19 Radiography chest X-ray, at 128² in grayscale with at most 160 training images.</em>
+</p>
+</details>
+</section>
+<section class="section container narrow page-section" id="️-installation"><p class="section-kicker">06 / INSTALLATION</p><h2>Installation</h2>
+<pre><code class="language-bash">git clone https://github.com/genmilab/DB-INR.git
+cd DB-INR
+pip install -r requirements.txt
+</code></pre>
+<p>Requirements: PyTorch ≥ 2.2, NumPy, OpenCV, NiBabel, SciPy and <code>medsegbench</code>.</p>
+</section>
+<section class="section container narrow page-section" id="️-data"><p class="section-kicker">07 / DATA</p><h2>Data</h2>
+<p>Set the split files and roots before training:</p>
+<pre><code class="language-bash">export OASIS_SPLITS=/path/to/oasis_splits.json
+export OASIS_ROOT=/path/to/oasis
+export ACDC_SPLITS=/path/to/acdc_splits.json
+export ACDC_ROOT=/path/to/acdc
+export OASIS3D_ROOT=/path/to/oasis3d
+</code></pre>
+<p>MedSegBench datasets download on first use through the <code>medsegbench</code> package (<code>--dataset msb:&lt;Name&gt;</code>).</p>
+</section>
+<section class="section container narrow page-section" id="-pretrained-weights"><p class="section-kicker">08 / PRETRAINED WEIGHTS</p><h2>Pretrained Weights</h2>
+<p>Checkpoints for the three benchmarks of Table 1:</p>
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>File</th>
+<th>Dataset</th>
+<th>Labels</th>
+<th>Res</th>
+<th><code>omega</code></th>
+<th>Bands</th>
+<th>Download</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dbinr_oasis2d.pt</code></td>
+<td>OASIS-2D, brain MRI</td>
+<td>25</td>
+<td>192</td>
+<td>20</td>
+<td>0.786, 1.272</td>
+<td><a href="https://drive.google.com/file/d/1wwZjdaieBG2Bl7H-29l-uz_9Zm1Po1MN/view?usp=sharing">link</a></td>
+</tr>
+<tr>
+<td><code>dbinr_acdc.pt</code></td>
+<td>ACDC, cardiac cine MRI</td>
+<td>3</td>
+<td>192</td>
+<td>30</td>
+<td>0.786, 1.272</td>
+<td><a href="https://drive.google.com/file/d/1rdFk542_-Utr8Uo1nQnnrDvaEndNi9K1/view?usp=sharing">link</a></td>
+</tr>
+<tr>
+<td><code>dbinr_oasis3d.pt</code></td>
+<td>OASIS-3D, brain volumes</td>
+<td>4</td>
+<td>64</td>
+<td>30</td>
+<td>0.500, 0.809</td>
+<td><a href="https://drive.google.com/file/d/1rcAEzCC1ENXMnITrWKt9UpcjtMlRmzMV/view?usp=sharing">link</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>Pass the <code>.pt</code> file to <code>evaluate.py</code>:</p>
+<pre><code class="language-bash">python evaluate.py --ckpt dbinr_oasis2d.pt --split test
+</code></pre>
+</section>
+<section class="section container narrow page-section" id="️-training"><p class="section-kicker">09 / TRAINING</p><h2>Training</h2>
+<p>OASIS-2D with 25 labels at the 1.0 M budget, the configuration reported in the paper:</p>
+<pre><code class="language-bash">python train.py --dataset oasis --classes 24 --res 192 \
+    --hidden 377 --layers 3 --head-hidden 512 --omega 20 \
+    --Tf 100 --outer-epochs 10 --head-epochs 1500 \
+    --bs 3 --head-bs 8 --seed 0 --out runs/dbinr_oasis
+</code></pre>
+<details open="open">
+<summary><strong>Other benchmarks</strong></summary>
+<pre><code class="language-bash"># Cardiac cine MRI (ACDC)
+python train.py --dataset acdc --classes 3 --omega 30 --out runs/dbinr_acdc
+
+# Volumetric (OASIS-3D)
+python train.py --dataset oasis3d --classes 4 --res 64 --omega 30 \
+    --bs 1 --head-epochs 800 --out runs/dbinr_oasis3d
+
+# MedSegBench (e.g. DCA1)
+python train.py --dataset msb:Dca1 --classes 1 --res 128 --omega 30 --out runs/dbinr_dca1
+</code></pre>
+</details>
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>Argument</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--hidden</code>, <code>--layers</code></td>
+<td>377, 3</td>
+<td>coordinate network width and depth</td>
+</tr>
+<tr>
+<td><code>--head-hidden</code></td>
+<td>512</td>
+<td>read-out hidden width</td>
+</tr>
+<tr>
+<td><code>--omega</code></td>
+<td>20</td>
+<td>base frequency ω</td>
+</tr>
+<tr>
+<td><code>--rho</code></td>
+<td>φ</td>
+<td>band ratio r_hi / r_lo</td>
+</tr>
+<tr>
+<td><code>--Ti</code>, <code>--Tf</code></td>
+<td>2, 100</td>
+<td>inner-loop steps (meta-training), fitting steps (refit and test)</td>
+</tr>
+<tr>
+<td><code>--outer-epochs</code>, <code>--head-epochs</code></td>
+<td>10, 1500</td>
+<td>stage one and stage two epochs</td>
+</tr>
+<tr>
+<td><code>--inner-lr</code>, <code>--outer-lr</code>, <code>--head-lr</code></td>
+<td>1e-4</td>
+<td>learning rates</td>
+</tr>
+<tr>
+<td><code>--gamma</code></td>
+<td>2.0</td>
+<td>focal-loss γ</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each run writes <code>&lt;out&gt;.pt</code> (meta-learned initialisation, head and arguments) and <code>&lt;out&gt;.json</code> (validation Dice and history).</p>
+</section>
+<section class="section container narrow page-section" id="-evaluation"><p class="section-kicker">10 / EVALUATION</p><h2>Evaluation</h2>
+<pre><code class="language-bash">python evaluate.py --ckpt runs/dbinr_oasis.pt --split test
+</code></pre>
+<p>The network is fitted to the intensities of each test scan for <code>Tf</code> steps with the reconstruction term alone, and the frozen head reads the labels. <code>--n</code> limits the number of test cases.</p>
+</section>
+<section class="section container narrow page-section" id="️-repository-structure"><p class="section-kicker">11 / REPOSITORY STRUCTURE</p><h2>Repository Structure</h2>
+<pre><code class="language-text">DB-INR/
+├── dbinr/
+│   ├── layers.py     # DualBandSineLayer and its ablation variants
+│   ├── models.py     # INR, segmentation head, SegINR
+│   ├── meta.py       # MAML meta-learner (inner and outer loop)
+│   ├── engine.py     # batched fitting, meta-training, head training
+│   ├── losses.py     # reconstruction, focal and composite losses
+│   ├── data.py       # OASIS-2D, ACDC, OASIS-3D and MedSegBench loaders
+│   └── metrics.py    # Dice, IoU, HD95, ASSD, NSD, PSNR
+├── train.py          # two-stage training
+├── evaluate.py       # test-time fitting and evaluation
+├── docs/assets/      # README figures (architecture, results, qualitative)
+└── requirements.txt
+</code></pre>
+</section>
+<section class="section container narrow page-section" id="-citation"><p class="section-kicker">12 / CITATION</p><h2>Citation</h2>
+<p>The citation will be added once the review process concludes.</p>
+</section>
+<section class="section container narrow page-section" id="-acknowledgments"><p class="section-kicker">13 / ACKNOWLEDGMENTS</p><h2>Acknowledgments</h2>
+<p>The baselines are SIREN, Gauss, WIRE, FINER and HOSC. Meta-learning follows MAML (Finn et al., 2017). We thank the providers of OASIS, ACDC and MedSegBench.</p>
+</section>
+<section class="section container narrow page-section" id="-contact"><p class="section-kicker">14 / CONTACT</p><h2>Contact</h2>
+<p>For questions, please open an <a href="https://github.com/genmilab/DB-INR/issues">issue</a>.</p>
+<div class="callout callout-important"><strong>Important</strong><p>DB-INR is intended for research only. It is not validated for clinical use and must not inform any diagnostic or treatment decision.</p></div>
+</section>
+</main>
+<footer class="site-footer"><div class="container">
+<a class="lab-footer" href="https://github.com/genmilab" aria-label="GenMI-Lab on GitHub">
+<img src="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" width="460" height="460" loading="lazy" alt="GenMI-Lab logo" /><span>GenMI-Lab</span></a>
+<p>Research code</p>
+<div><a href="https://github.com/genmilab/DB-INR">Source code</a></div>
+</div></footer>
+<div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body>
+</html>
