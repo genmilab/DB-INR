@@ -18,7 +18,7 @@ style="margin-bottom:-10px; display:block;" />
 [![Weights](https://img.shields.io/badge/Weights-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](#-pretrained-weights)
 [![Task](https://img.shields.io/badge/Task-Implicit_Segmentation-37CCB6?style=for-the-badge)](#-method)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.2+-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](#️-installation)
-[![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2FAtharva-Rege%2FDB-INR&label=Views&countColor=%23147b82&style=for-the-badge)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2FAtharva-Rege%2FDB-INR)
+[![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2Fgenmilab%2FDB-INR&label=Views&countColor=%23147b82&style=for-the-badge)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fgenmilab%2FDB-INR)
 
 <h3>🧠 <a href="#-method">Method</a> &nbsp;|&nbsp; 🏆 <a href="#-results">Results</a> &nbsp;|&nbsp; 🧩 <a href="#-pretrained-weights">Weights</a> &nbsp;|&nbsp; 🏋️ <a href="#️-training">Train</a> &nbsp;|&nbsp; ⚡ <a href="#-evaluation">Evaluate</a></h3>
 
@@ -145,7 +145,7 @@ On OASIS-2D every backbone recovers the same gross anatomy and they differ at th
 ## ⛏️ Installation
 
 ```bash
-git clone https://github.com/Atharva-Rege/DB-INR.git
+git clone https://github.com/genmilab/DB-INR.git
 cd DB-INR
 pip install -r requirements.txt
 ```
@@ -264,7 +264,7 @@ The citation will be added once the review process concludes.
 The baselines are SIREN, Gauss, WIRE, FINER and HOSC. Meta-learning follows MAML (Finn et al., 2017). We thank the providers of OASIS, ACDC and MedSegBench.
 
 ## 📨 Contact
-For questions, please open an [issue](https://github.com/Atharva-Rege/DB-INR/issues).
+For questions, please open an [issue](https://github.com/genmilab/DB-INR/issues).
 
 > [!IMPORTANT]
 > DB-INR is intended for research only. It is not validated for clinical use and must not inform any diagnostic or treatment decision.
